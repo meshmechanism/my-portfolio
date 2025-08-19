@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React and Babel CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body class="bg-slate-50 dark:bg-slate-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useMemo } = React;
+
+      const PROJECTS_JSON_URL = "projects.json";
+      const DEMO_PROJECTS = [];
+
+      const storageKey = "portfolio-projects-v1";
+      const themeKey = "portfolio-theme";
+
+      function uid() {
+        return Math.random().toString(36).slice(2, 10);
+      }
+
+      const Tag = ({ active, children, onClick }) => (
+        <button
+          onClick={onClick}
+          className={
+            "px-3 py-1 rounded-full border text-sm transition-all " +
+            (active
+              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+              : "bg-white/70 dark:bg-slate-900/50 text-slate-700 dark:text-slate-200 hover:shadow")
+          }
+        >
+          {children}
+        </button>
+      );
+
+      const TechBadge = ({ children }) => (
+        <span className="text-xs rounded-full px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border">
+          {children}
+        </span>
+      );
+
+      const Action = ({ href, label }) => (
+        <a
+          href={href || "#"}
+          className="text-sm px-3 py-2 rounded-xl border hover:shadow inline-block"
+        >
+          {label}
+        </a>
+      );
+
+      function useThemeToggle() {
+        const [theme, setTheme] = useState("light");
+        useEffect(() => {
+          const saved = localStorage.getItem(themeKey);
+          const sysDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          const next = saved || (sysDark ? "dark" : "light");
+          setTheme(next);
+        }, []);
+        useEffect(() => {
+          document.documentElement.classList.toggle("dark", theme === "dark");
+          localStorage.setItem(themeKey, theme);
+        }, [theme]);
+        return { theme, setTheme };
+      }
+
+      function Portfolio() {
+        const { theme, setTheme } = useThemeToggle();
+        const [loadingJson, setLoadingJson] = useState(false);
+        const [jsonStatus, setJsonStatus] = useState("");
+
+        const [projects, setProjects] = useState(() => {
+          try {
+            const raw = localStorage.getItem(storageKey);
+            if (raw) return JSON.parse(raw);
+          } catch {}
+          return DEMO_PROJECTS;
+        });
+
+        useEffect(() => {
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(projects));
+          } catch {}
+        }, [projects]);
+
+        useEffect(() => {
+          const raw = localStorage.getItem(storageKey);
+          if (raw && raw !== JSON.stringify(DEMO_PROJECTS)) return;
+          (async () => {
+            try {
+              setLoadingJson(true);
+              setJsonStatus("Loading projects.json…");
+              const res = await fetch(PROJECTS_JSON_URL, { cache: "no-store" });
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              const data = await res.json();
+              if (Array.isArray(data) && data.length) {
+                setProjects(data);
+                setJsonStatus("Loaded from projects.json");
+              } else {
+                setJsonStatus("Using demo data (empty JSON)");
+              }
+            } catch (e) {
+              setJsonStatus("Using demo data (no projects.json)");
+            } finally {
+              setLoadingJson(false);
+            }
+          })();
+        }, []);
+
+        const [q, setQ] = useState("");
+        const [activeTags, setActiveTags] = useState([]);
+        const [sort, setSort] = useState("newest");
+
+        const allTags = useMemo(
+          () => Array.from(new Set(projects.flatMap((p) => p.tags || [])).values()).sort(),
+          [projects]
+        );
+
+        const filtered = useMemo(() => {
+          let out = projects.filter((p) => {
+            const blob = [p.title, p.subtitle, p.description, ...(p.tech || []), ...(p.tags || [])]
+              .join(" ")
+              .toLowerCase();
+            const inSearch = blob.includes(q.toLowerCase());
+            const tagOk = activeTags.length ? activeTags.every((t) => (p.tags || []).includes(t)) : true;
+            return inSearch && tagOk;
+          });
+          if (sort === "newest") out.sort((a, b) => (b.year || 0) - (a.year || 0));
+          if (sort === "az") out.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+          return out;
+        }, [q, activeTags, sort, projects]);
+
+        const toggleTag = (t) =>
+          setActiveTags((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+
+        return (
+          <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 text-slate-900 dark:text-slate-100">
+            <header className="sticky top-0 z-30 backdrop-blur bg-white/80 dark:bg-slate-900/80 border-b">
+              <div className="mx-auto max-w-7xl px-4 py-3 flex flex-wrap gap-3 items-center">
+                <div className="flex-1 min-w-[200px]">
+                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Projects</h1>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Portfolio of tools and apps
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value)}
+                    className="px-3 py-2 rounded-xl border bg-transparent"
+                  >
+                    <option value="newest">Sort: Newest</option>
+                    <option value="az">Sort: A → Z</option>
+                  </select>
+                  <button
+                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                    className="px-3 py-2 rounded-xl border"
+                  >
+                    {theme === "dark" ? "🌙" : "☀️"}
+                  </button>
+                </div>
+              </div>
+            </header>
+
+            <section className="mx-auto max-w-7xl px-4 pt-6 pb-2">
+              <div className="flex flex-col lg:flex-row gap-3 lg:items-center">
+                <input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Search title, tech, tags…"
+                  className="flex-1 px-4 py-3 rounded-2xl border bg-white/90 dark:bg-slate-900/70 outline-none"
+                />
+
+                <div className="flex flex-wrap gap-2">
+                  {allTags.map((t) => (
+                    <Tag key={t} active={activeTags.includes(t)} onClick={() => toggleTag(t)}>
+                      {t}
+                    </Tag>
+                  ))}
+                  {activeTags.length > 0 && (
+                    <button onClick={() => setActiveTags([])} className="px-3 py-1 rounded-full border text-sm">
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button onClick={() => window.location.reload()} className="px-4 py-2 rounded-xl border">
+                  Reload from projects.json
+                </button>
+                {jsonStatus && <span className="text-sm text-slate-500 ml-2">{jsonStatus}</span>}
+              </div>
+            </section>
+
+            <main className="mx-auto max-w-7xl px-4 pb-16">
+              {filtered.length === 0 ? (
+                <p className="text-slate-500 py-10">No projects match your filters.</p>
+              ) : (
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {filtered.map((p) => (
+                    <article key={p.id} className="group rounded-2xl overflow-hidden border bg-white/70 dark:bg-slate-900/60 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="aspect-[16/10] overflow-hidden">
+                        <img src={p.image} alt={p.title} className="h-full w-full object-cover group-hover:scale-[1.03] transition-transform" loading="lazy" />
+                      </div>
+                      <div className="p-4 flex flex-col gap-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <h3 className="text-lg font-semibold leading-tight">{p.title}</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">{p.subtitle}</p>
+                          </div>
+                          <span className="text-xs px-2 py-1 rounded-full border bg-white/70 dark:bg-slate-800/60">{p.year}</span>
+                        </div>
+                        <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{p.description}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {(p.tech || []).map((t) => <TechBadge key={t}>{t}</TechBadge>)}
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {(p.tags || []).map((t) => (
+                            <span key={t} className="text-xs rounded-md px-2 py-1 border bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300">{t}</span>
+                          ))}
+                        </div>
+                        {p.highlights?.length ? (
+                          <ul className="flex flex-wrap gap-2 text-xs text-slate-500">
+                            {p.highlights.map((h) => (
+                              <li key={h} className="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800">{h}</li>
+                            ))}
+                          </ul>
+                        ) : null}
+                        <div className="mt-1 flex flex-wrap gap-2">
+                          {p.links?.docs && <Action href={p.links.docs} label="Docs" />}
+                          {p.links?.github && <Action href={p.links.github} label="GitHub" />}
+                          {p.links?.download && <Action href={p.links.download} label="Download" />}
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </main>
+
+            <footer className="border-t">
+              <div className="mx-auto max-w-7xl px-4 py-8 text-sm text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+                <span>© {new Date().getFullYear()} My Portfolio</span>
+                <a href="#" className="underline underline-offset-4">Contact</a>
+              </div>
+            </footer>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<Portfolio />);
+    </script>
+  </body>
+</html>

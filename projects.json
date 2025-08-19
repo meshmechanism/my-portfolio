@@ -1,0 +1,171 @@
+[
+  {
+    "id": "dxf-hatch-gen",
+    "title": "DXF Hatch Generator Pro",
+    "subtitle": "Auto-hatch & DXF export for laser",
+    "description": "Generate hatch patterns from closed boundaries (polylines, text outlines) with batch export to DXF for laser workflows. Pattern scaling/spacing, presets, and preview.",
+    "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1600&auto=format&fit=crop",
+    "tech": [
+      "Python",
+      "PySide6",
+      "ezdxf",
+      "NumPy",
+      "OpenCV"
+    ],
+    "tags": [
+      "CAD",
+      "GUI",
+      "Manufacturing",
+      "Laser"
+    ],
+    "links": {
+      "github": "#",
+      "docs": "#",
+      "download": "downloads/DXF_Hatch_Gen_V1.1.exe"
+    },
+    "highlights": [
+      "Batch DXF",
+      "Pattern presets",
+      "Preview"
+    ],
+    "year": 2025
+  },
+  {
+    "id": "fft-analysis",
+    "title": "FFT Vibration Analysis",
+    "subtitle": "Real‑time spectral analysis",
+    "description": "Live sensor acquisition, FFT, and order tracking for rotating machinery. CSV export and report-ready plots.",
+    "image": "https://images.unsplash.com/photo-1504384764586-bb4cdc1707b0?q=80&w=1600&auto=format&fit=crop",
+    "tech": [
+      "Python",
+      "NumPy",
+      "SciPy",
+      "Matplotlib"
+    ],
+    "tags": [
+      "Signal Processing",
+      "Monitoring",
+      "GUI"
+    ],
+    "links": {
+      "github": "#",
+      "docs": "#",
+      "download": "#"
+    },
+    "highlights": [
+      "Real‑time",
+      "CSV export",
+      "Plots"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "single-plane-balance",
+    "title": "Single‑Plane Balancing",
+    "subtitle": "Rotor balancing with automated trial/calc flow",
+    "description": "Guided workflow for trial weight, phase measurement, and correction vector. Tachometer input and live trend.",
+    "image": "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1600&auto=format&fit=crop",
+    "tech": [
+      "Python",
+      "Qt",
+      "NumPy"
+    ],
+    "tags": [
+      "Mechanical",
+      "Vibration",
+      "GUI"
+    ],
+    "links": {
+      "github": "#",
+      "docs": "#",
+      "download": "#"
+    },
+    "highlights": [
+      "Guided steps",
+      "Live trend"
+    ],
+    "year": 2023
+  },
+  {
+    "id": "process-control",
+    "title": "Process Control Studio",
+    "subtitle": "PID tuning for temp & motor speed with live plots",
+    "description": "Closed-loop control with ZN/IMC tuning helpers, step tests, and disturbance rejection evaluation.",
+    "image": "https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=1600&auto=format&fit=crop",
+    "tech": [
+      "Python",
+      "PySide6",
+      "Control"
+    ],
+    "tags": [
+      "Control",
+      "PID",
+      "Real‑time",
+      "GUI"
+    ],
+    "links": {
+      "github": "#",
+      "docs": "#",
+      "download": "#"
+    },
+    "highlights": [
+      "ZN/IMC",
+      "Step tests"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "mes-acoustic",
+    "title": "MES Acoustic",
+    "subtitle": "Vibro‑acoustic SPL simulation",
+    "description": "Energy‑based approach with ray visualization and material library for quick scenario setup.",
+    "image": "https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=1600&auto=format&fit=crop",
+    "tech": [
+      "Python",
+      "Ray tracing",
+      "NumPy"
+    ],
+    "tags": [
+      "Acoustics",
+      "Simulation",
+      "GUI"
+    ],
+    "links": {
+      "github": "#",
+      "docs": "#",
+      "download": "#"
+    },
+    "highlights": [
+      "Material DB",
+      "Ray view"
+    ],
+    "year": 2022
+  },
+  {
+    "id": "cpr-platform",
+    "title": "Wireless CPR Training Platform",
+    "subtitle": "Raspberry Pi‑based instructor dashboard with feedback",
+    "description": "Real‑time compression depth/rate, ventilation metrics, and session logs with multi‑client monitoring.",
+    "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=1600&auto=format&fit=crop",
+    "tech": [
+      "Raspberry Pi",
+      "Bluetooth",
+      "Python"
+    ],
+    "tags": [
+      "Medical",
+      "IoT",
+      "Education"
+    ],
+    "links": {
+      "github": "#",
+      "docs": "#",
+      "download": "#"
+    },
+    "highlights": [
+      "Realtime",
+      "Multi‑client"
+    ],
+    "year": 2021
+  }
+]
